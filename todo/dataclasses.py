@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-
 @dataclass
 class TodoData:
     title: str
     description: str = ""
     is_completed: bool = False
-
 
 @dataclass
 class TodoUpdateData:

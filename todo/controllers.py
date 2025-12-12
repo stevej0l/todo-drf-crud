@@ -1,38 +1,45 @@
-from dataclasses import asdict
 from typing import List
-
-from django.shortcuts import get_object_or_404
-
-from .models import Todo
+from .serializers import (
+    TodoCreateRequestSerializer,
+    TodoUpdateRequestSerializer,
+    TodoPartialUpdateRequestSerializer,
+)
 from .dataclasses import TodoData, TodoUpdateData
+from rest_framework.exceptions import ValidationError
 
+# LIST / GET can remain simple helpers (no DB here by request)
+# For read operations the view will call model/query directly or you can add a helper that returns querysets.
 
-def list_todos() -> List[Todo]:
-    return Todo.objects.all().order_by("-created_at")
+def prepare_create(request_data: dict) -> TodoData:
+    """
+    Controller -> calls serializer to validate request data.
+    Returns a TodoData dataclass ready for the view to persist via model.
+    """
+    serializer = TodoCreateRequestSerializer(data=request_data)
+    serializer.is_valid(raise_exception=True)
+    v = serializer.validated_data
+    return TodoData(
+        title=v["title"],
+        description=v.get("description", ""),
+        is_completed=v.get("is_completed", False),
+    )
 
+def prepare_full_update(request_data: dict) -> TodoUpdateData:
+    serializer = TodoUpdateRequestSerializer(data=request_data)
+    serializer.is_valid(raise_exception=True)
+    v = serializer.validated_data
+    return TodoUpdateData(
+        title=v["title"],
+        description=v.get("description", ""),
+        is_completed=v["is_completed"],
+    )
 
-def get_todo(todo_id: int) -> Todo:
-    return get_object_or_404(Todo, id=todo_id)
-
-
-def create_todo(data: TodoData) -> Todo:
-    return Todo.objects.create(**asdict(data))
-
-
-def update_todo(todo_id: int, data: TodoUpdateData) -> Todo:
-    todo = get_todo(todo_id)
-
-    if data.title is not None:
-        todo.title = data.title
-    if data.description is not None:
-        todo.description = data.description
-    if data.is_completed is not None:
-        todo.is_completed = data.is_completed
-
-    todo.save()
-    return todo
-
-
-def delete_todo(todo_id: int) -> None:
-    todo = get_todo(todo_id)
-    todo.delete()
+def prepare_partial_update(request_data: dict) -> TodoUpdateData:
+    serializer = TodoPartialUpdateRequestSerializer(data=request_data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    v = serializer.validated_data
+    return TodoUpdateData(
+        title=v.get("title"),
+        description=v.get("description"),
+        is_completed=v.get("is_completed"),
+    )
