@@ -3,5 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("todo.urls")),  # <--- this is the entry point for our flow
+    path("api/", include("core.feature.todo.urls")),  # <--- this is the entry point for our flow
 ]
