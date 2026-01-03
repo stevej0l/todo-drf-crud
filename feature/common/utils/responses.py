@@ -36,3 +36,17 @@ def error_response(
         response["errors"] = errors
 
     return Response(response, status=status_code)
+
+
+# ✅ THIS MUST BE AT FILE LEVEL (no indentation)
+def serialized_response(serializer_class, many=False, message="Success"):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            serializer = serializer_class(result, many=many)
+            return success_response(
+                data=serializer.data,
+                message=message
+            )
+        return wrapper
+    return decorator

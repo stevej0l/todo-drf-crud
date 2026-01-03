@@ -10,7 +10,7 @@ from .services import (
     delete_todo
 )
 from .models import Todo
-from core.feature.common.utils import success_response, error_response
+from feature.common.utils.responses import success_response, error_response
 
 
 @api_view(["POST"])

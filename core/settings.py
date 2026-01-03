@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "rest_framework",   # DRF
-    "core.feature.todo.apps.TodoConfig",         # our app
+    "feature.todo.apps.TodoConfig",  # our app
+    "feature.artist",
+    "feature.musicapp",
 ]
 
 

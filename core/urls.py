@@ -3,5 +3,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("core.feature.todo.urls")),  # <--- this is the entry point for our flow
+
+    # API entry point
+    path("api/artists/", include("feature.artist.urls")),
+    path("api/songs/", include("feature.musicapp.urls")),
 ]
